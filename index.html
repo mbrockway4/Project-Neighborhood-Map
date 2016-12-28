@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neighborhood Map</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2rRCJ7tivlN2KaYRu7t-gASxoLfPUC_U&libraries=places" async>
+    //loads Google Map API
+    </script>
+    <div id='openweathermap-widget'></div>
+    <script type='text/javascript'>
+    //Code to add OpenWeatherMap 3rd party API
+    window.myWidgetParam = {
+        id: 9,
+        cityid: 4990510,
+        appid: 'cfd9a71a1b3875e6830fa00a12e98bf5',
+        containerid: 'openweathermap-widget',
+    };
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = 'http://openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(script, s);
+    })();
+    </script>
+    <script src="js/libs/jquery.min.js"></script>
+</head>
+<div id="map_canvas"></div>
+<body>
+    <div class="options-box">
+        <h3> Neighborhood Tool Map V1.0 <br> Searching in 48128...</h3>
+        <form id="form" class="form" name="selection"> <select id="selectBox" onchange="initMap(this.value)"></select> </form> <input data-bind="click: clearmarkers" type='button' id='hideshow' value='Hide/Show Results'><input type="button" id="reset" value="Reset Search" onClick="window.location.reload()">
+        <ul data-bind="visible: show, foreach: locList" id="list">
+            <li data-bind="text: loc, event : {click: $parent.SelectMarker, mouseover: $parent.onMouseover, mouseout: $parent.onMouseout}"></li>
+        </ul>
+    </div>
+    <div id="map"></div>
+    <script src="js/libs/knockout-3.4.1.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
