@@ -5,19 +5,8 @@ var selectedValue;
 var list;
 var listsub;
 //Creates Dropdown box with all choices
-var getDropdown = function(x) {
-  for (i = 0; i < x.length; i++) {
-    if (x[i] == 'restaurant') {
-      list = '<option value=%option% selected>%option%</option>';
-      listsub = list.replace("%option%", x[i]).replace("%option%", x[i].charAt(0).toUpperCase());
-    } else {
-      list = '<option value=%option%>%option%</option>';
-      listsub = list.replace("%option%", x[i].toLowerCase()).replace("%option%", x[i]);
-    }
-    $("#selectBox").append(listsub);
-  }
-};
-getDropdown(locationTypes);
+
+//getDropdown(locationTypes);
 //initialLocs
 var map;
 var service;
@@ -25,46 +14,61 @@ var infowindow;
 var results = [];
 var data = "";
 var markerList = [];
+//var weather = gettingJSON();
 
 //Creates KO Marker Objects
 var Location = function(data) {
   this.loc = data.place.name;
   this.marker = data;
 };
+
+
 //KO View Model
 var ViewModel = function() {
   var self = this;
-  this.show = ko.observable(true);
+  self.filter =  ko.observable("");
+  self.show = ko.observable(true);
   this.locList = ko.observableArray([]);
+  this.types = ko.observableArray(locationTypes)
+
   //add marker locations to navbar
   markerList.forEach(function(locItem) {
     self.locList.push(new Location(locItem));
   });
   this.currentLocation = ko.observable(self.locList()[0]);
-  this.SelectMarker = function(Location) {
-    google.maps.event.trigger(Location.marker, 'click');
-  };
+
+  
   this.onMouseover = function(Location) {
     google.maps.event.trigger(Location.marker, 'mouseover');
   };
   this.onMouseout = function(Location) {
     google.maps.event.trigger(Location.marker, 'mouseout');
   };
-  this.clearmarkers = function() {
-    this.show(!this.show());
-  };
+  self.showInfo = function (Location) {
+    google.maps.event.trigger(Location.marker, 'click');
+  }
+
+  // inside a View Model
+self.input_text = ko.observable(); // I am bound to an input box in the View
+// the computed "wraps around" input_text, basing its output off it
+self.formatted_input = ko.computed(function() {
+    return self.input_text() + "YEAHHH!!!";
+});
+
+
 };
+
 var map = "";
 var home = "";
 var request = "";
 
 //Creates the initial Map and Start KO binding
 function initMap(type) {
-  selectBox = document.getElementById("selectBox");
-  selectedValue = selectBox.options[selectBox.selectedIndex].value;
+  //selectBox = document.getElementById("selectBox");
+  //selectedValue = selectBox.options[selectBox.selectedIndex].value;
   home = {
-    lat: 42.324949,
-    lng: -83.2689983
+    lat: 42.324966,
+    lng: -83.2689954
   };
   map = new google.maps.Map(document.getElementById('map'), {
     center: home,
@@ -89,7 +93,7 @@ function initMap(type) {
   request = {
     location: home,
     radius: '3000',
-    types: [type.toLowerCase()]
+
   };
   var service = new google.maps.places.PlacesService(map);
   service.nearbySearch(request, processResults);
@@ -97,7 +101,7 @@ function initMap(type) {
   setTimeout(function() {
      ko.applyBindings(new ViewModel());
   }, 1500);
-  $('#selectBox').attr('disabled', 'disabled');
+  
 }
 
 //process the Results returned from Google Places API
@@ -118,20 +122,45 @@ function processResults(results, status) {
   }
 }
 
+var currentINW = null
+var currentmarker = null;
+
+function navToggle()
+{
+  $('.options-box').toggle(function(){
+    $('.options-box').css({height: "100%"});
+});
+}
+
 var markerList = [];
 var currentView = {};
 
+
+
 //Creates and adds Markers from results list.  Pin Creation and listener events handled.
 function addMarker(place) {
-  var pinColor = "FF0000";
+
+   var pinColor = "FF0000"; //red
   var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-    new google.maps.Size(21, 34),
+    new google.maps.Size(41, 54),
+    new google.maps.Point(0, 0));
+
+  var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+    new google.maps.Size(41, 54),
     new google.maps.Point(0, 0),
     new google.maps.Point(10, 34));
-  var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-    new google.maps.Size(40, 37),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(12, 35));
+
+  var pinColor3 = "FFFF00"; //yellow
+    var pinImage3 = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor3,
+      new google.maps.Size(41, 54),
+      new google.maps.Point(0, 0));
+
+  var pinColor2 = "008000"; //green
+    var pinImage2 = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor2,
+      new google.maps.Size(41, 54),
+      new google.maps.Point(0, 0));
+
+
   var streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview?size=400x300&location=';
   var placeLoc = place.geometry.location;
   var marker = new google.maps.Marker({
@@ -142,6 +171,8 @@ function addMarker(place) {
     animation: google.maps.Animation.DROP,
     title: "test"
   });
+  var currentIW = false;
+  
   var lat = marker.getPosition().lat();
   var lng = marker.getPosition().lng();
   var streetview = streetViewUrl + lat + "," + lng + "&fov=90&heading=235&pitch=10";
@@ -149,39 +180,61 @@ function addMarker(place) {
     '" alt="Street View Image of ' + place.name + '"><br><hr style="margin-bottom: 5px"><strong>' +
     place.name + '</strong><br><p>' +
     place.vicinity;
-  marker.infowindow = new google.maps.InfoWindow({
-    content: contentString
-  });
+
   marker.place = place;
+  marker.contentString = contentString;
   markerList.push(marker);
-  marker.addListener('click', function() {
-    markerList.forEach(function(x) {
-      x.infowindow.close();
+  marker.picked = false;
+
+  
+  
+ google.maps.event.addListener(marker, 'click', function() {     
+      if(currentINW != null)
+      {
+        currentINW.close();
+        currentmarker.picked = false;
+        currentmarker.setIcon(pinImage);
+      }
+      
+      var infowindow = new google.maps.InfoWindow({
+    content: contentString,
+    pixelOffset: new google.maps.Size(-10, -10),
+    currentIW : true
+  });
+      map.panTo(marker.position); 
+      infowindow.open(map, this);
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+      marker.picked = true;
+      setTimeout(function(){marker.setAnimation(null);
+    }, 1450);
+      currentINW = infowindow;
+      currentmarker = marker;
+
     });
-    var pinColor3 = "FFD700";
-    var pinImage3 = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor3,
-      new google.maps.Size(21, 34),
-      new google.maps.Point(0, 0),
-      new google.maps.Point(10, 34));
+
+
+marker.addListener('mouseover', function() {
+   if(marker.picked == false)
+   {
     this.setIcon(pinImage3);
-    map.setCenter(marker.getPosition());
-    marker.infowindow.open(map, marker);
-    //marker.infowindow.state = "open";
-  });
-  marker.addListener('mouseover', function() {
-    var pinColor2 = "008000";
-    var pinImage2 = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor2,
-      new google.maps.Size(41, 54),
-      new google.maps.Point(0, 0),
-      new google.maps.Point(10, 34));
+   }
+   else
+   {
     this.setIcon(pinImage2);
+  }
   });
+  
   marker.addListener('mouseout', function() {
-    var pinColor2 = "FF0000";
-    var pinImage2 = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor2,
-      new google.maps.Size(21, 34),
-      new google.maps.Point(0, 0),
-      new google.maps.Point(10, 34));
-    this.setIcon(pinImage2);
+    if(marker.picked == false)
+    {
+    this.setIcon(pinImage);
+    }
+    else {
+      this.setIcon(pinImage2);
+    }
   });
+  /*
+  
+  
+*/
 }

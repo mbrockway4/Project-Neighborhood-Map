@@ -12,9 +12,10 @@
    li {} li:hover {
        font-weight: bold;
        text-decoration: underline;
-       background-color: green;
+       background-color: yellow;
        cursor: pointer;
    }
+   
    .container {
        height: 100%;
        position: relative;
@@ -41,9 +42,10 @@
    #map {
        bottom: 0px;
        height: 100%;
-       left: 362px;
+       width: 100%;s
        position: absolute;
        right: 0px;
+       z-index: 0;
    }
    .options-box {
        background: #fff;
@@ -53,8 +55,13 @@
        line-height: 35px;
        padding: 10px 10px 30px 10px;
        text-align: left;
-       width: 340px;
+       width: 280px;
+       overflow: scroll;
+       position: absolute;
+       z-index: 4;
    }
+
+
    #pano {
        width: 200px;
        height: 200px;
@@ -79,6 +86,12 @@
    }
    div#openweathermap-widget {
        position: absolute;
-       left: 80%;
+        right: 0;
        z-index: 1000;
+   }
+   #hidenav {
+      padding-bottom: 0;
+      z-index: 5;
+      position: fixed;
+      left: 115px;
    }
