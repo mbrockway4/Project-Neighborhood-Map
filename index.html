@@ -9,9 +9,6 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2rRCJ7tivlN2KaYRu7t-gASxoLfPUC_U&libraries=places&callback=initMap" async>
     //loads Google Map API
     </script>
-
-    
-    
     <script src="js/libs/jquery.min.js"></script>
 </head>
 
@@ -22,13 +19,13 @@
     <div class="options-box">
         
         <h3> Neighborhood Tool Map V1.0 <br> Searching in 48128...</h3>
-        <select data-bind="options: types"></select>
-        
-        <input type="button" id="reset" value="Reset Search" onClick="filter">
+        <select data-bind="options: types, value:selectedType, event:{ change: filter}"></select>   
 
-        <ul data-bind="visible: show, foreach: locList" id="list">
-            <li data-bind="text: loc, event : {mouseover: $parent.onMouseover, mouseout: $parent.onMouseout, click: $parent.showInfo}"></li>
+        <div data-bind="with: Object"></div>
+        <ul data-bind= "foreach: locList" id="list">
+            <li data-bind="visible: show==true, text: name, event : {mouseover: $parent.onMouseover, mouseout: $parent.onMouseout, click: $parent.showInfo}"></li>
         </ul>
+</div>
     </div>
     <div id="map"></div>
     <script src="js/libs/knockout-3.4.1.js"></script>

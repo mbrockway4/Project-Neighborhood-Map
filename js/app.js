@@ -14,13 +14,9 @@ var infowindow;
 var results = [];
 var data = "";
 var markerList = [];
-//var weather = gettingJSON();
 
 //Creates KO Marker Objects
-var Location = function(data) {
-  this.loc = data.place.name;
-  this.marker = data;
-};
+
 
 
 //KO View Model
@@ -30,33 +26,62 @@ var ViewModel = function() {
   self.show = ko.observable(true);
   this.locList = ko.observableArray([]);
   this.types = ko.observableArray(locationTypes)
+  selectedType = ko.observable()
 
-  //add marker locations to navbar
-  markerList.forEach(function(locItem) {
-    self.locList.push(new Location(locItem));
-  });
-  this.currentLocation = ko.observable(self.locList()[0]);
+
+
+  var Locations = function(data) {
+  this.loc = data.place.name;
+  this.marker = data;
+  var index=0;
+
+  this.Types = data.place.types
+  this.show = true;
+  };
+
+self.locList = convertToObservable(markerList)
 
   
-  this.onMouseover = function(Location) {
-    google.maps.event.trigger(Location.marker, 'mouseover');
+  self.onMouseover = function(Location) {
+   
+    google.maps.event.trigger(Location.Marker, 'mouseover');
   };
-  this.onMouseout = function(Location) {
-    google.maps.event.trigger(Location.marker, 'mouseout');
+  self.onMouseout = function(Location) {
+    google.maps.event.trigger(Location.Marker, 'mouseout');
   };
   self.showInfo = function (Location) {
-    google.maps.event.trigger(Location.marker, 'click');
-  }
+    google.maps.event.trigger(Location.Marker, 'click');
+  };
 
-  // inside a View Model
-self.input_text = ko.observable(); // I am bound to an input box in the View
-// the computed "wraps around" input_text, basing its output off it
-self.formatted_input = ko.computed(function() {
-    return self.input_text() + "YEAHHH!!!";
-});
+  self.filter = function (obj) {
+    
+    
+      obj.locList.forEach(function(x)
+      {
+          var selected = selectedType();
+         
+          if(x.place.types.indexOf(selected) == -1)
+          {          
+            self.show = false;       
+          }
+          else
+          {
+            self.show = true;   
+          }
+      })
+
+  
+  }
+ 
 
 
 };
+
+
+
+
+
+var markerList = [];
 
 var map = "";
 var home = "";
@@ -72,7 +97,7 @@ function initMap(type) {
   };
   map = new google.maps.Map(document.getElementById('map'), {
     center: home,
-    zoom: 15,
+    zoom: 13,
   });
   //Home location
   var goldStar = {
@@ -104,6 +129,10 @@ function initMap(type) {
   
 }
 
+
+
+
+
 //process the Results returned from Google Places API
 function processResults(results, status) {
   if (status !== google.maps.places.PlacesServiceStatus.OK || results.length < 1) {
@@ -132,7 +161,7 @@ function navToggle()
 });
 }
 
-var markerList = [];
+
 var currentView = {};
 
 
@@ -182,9 +211,25 @@ function addMarker(place) {
     place.vicinity;
 
   marker.place = place;
+  marker.name = place.name;
+ var index = 0;
+  marker.place.types.forEach(function(x)
+  {
+    x= x.charAt(0).toUpperCase()+ x.slice(1);
+    marker.place.types[index] = x;
+    index = index+1;
+  })
+  marker.marker = marker;
   marker.contentString = contentString;
+
+
+
   markerList.push(marker);
+
+  
   marker.picked = false;
+
+  
 
   
   
@@ -213,6 +258,8 @@ function addMarker(place) {
     });
 
 
+
+
 marker.addListener('mouseover', function() {
    if(marker.picked == false)
    {
@@ -237,4 +284,27 @@ marker.addListener('mouseover', function() {
   
   
 */
+}
+
+
+
+function convertToObservable(list) 
+{ 
+    
+    var newList = []; 
+    $.each(list, function (i, obj) {
+        var newObj = {}; 
+
+        newObj.place = obj.place.name;
+        newObj.Marker = obj.marker;
+        
+        Object.keys(obj).forEach(function (key) { 
+            
+            newObj[key] = obj[key];
+        }); 
+        newObj.show = true
+        newList.push(newObj); 
+    }); 
+   
+    return newList; 
 }
