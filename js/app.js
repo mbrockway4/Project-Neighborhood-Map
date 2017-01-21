@@ -19,64 +19,45 @@ var markerList = [];
 
 
 
+
+
 //KO View Model
 var ViewModel = function() {
   var self = this;
-  self.filter =  ko.observable("");
-  self.show = ko.observable(true);
-  this.locList = ko.observableArray([]);
+  
+  
+  this.locList = ko.observableArray(markerList);
   this.types = ko.observableArray(locationTypes)
   selectedType = ko.observable()
+  this.locList.show = ko.observable(true);
+  
 
-
-
-  var Locations = function(data) {
-  this.loc = data.place.name;
-  this.marker = data;
-  var index=0;
-
-  this.Types = data.place.types
-  this.show = true;
-  };
-
-self.locList = convertToObservable(markerList)
 
   
-  self.onMouseover = function(Location) {
-   
-    google.maps.event.trigger(Location.Marker, 'mouseover');
+  this.onMouseover = function(Location) {
+    google.maps.event.trigger(Location.marker, 'mouseover');
   };
-  self.onMouseout = function(Location) {
-    google.maps.event.trigger(Location.Marker, 'mouseout');
+  this.onMouseout = function(Location) {
+    google.maps.event.trigger(Location.marker, 'mouseout');
   };
-  self.showInfo = function (Location) {
-    google.maps.event.trigger(Location.Marker, 'click');
+  this.showInfo = function (Location) {
+    google.maps.event.trigger(Location.marker, 'click');
   };
 
-  self.filter = function (obj) {
-    
-    
-      obj.locList.forEach(function(x)
-      {
-          var selected = selectedType();
-         
-          if(x.place.types.indexOf(selected) == -1)
-          {          
-            self.show = false;       
-          }
-          else
-          {
-            self.show = true;   
-          }
-      })
+  this.filter = function (obj) {
+        //is there a way to iterate through the locList observableArray?  forEach?
+  markerList.forEach(function(x){
+        x.show(!x.show());
+  })
 
-  
-  }
+  //This doesnt seem correct
+  this.locList = ko.observableArray(markerList);
+
  
 
+}
 
-};
-
+}
 
 
 
@@ -146,7 +127,6 @@ function processResults(results, status) {
     for (var i = 0; i < results.length; i++) {
       var place = results[i];
       addMarker(place);
-      //Viewmodel.locList.push(place) 
     }
   }
 }
@@ -163,7 +143,6 @@ function navToggle()
 
 
 var currentView = {};
-
 
 
 //Creates and adds Markers from results list.  Pin Creation and listener events handled.
@@ -221,17 +200,15 @@ function addMarker(place) {
   })
   marker.marker = marker;
   marker.contentString = contentString;
-
-
-
-  markerList.push(marker);
+    marker.show = ko.observable(true);
+   markerList.push(marker);
 
   
   marker.picked = false;
 
   
 
-  
+ 
   
  google.maps.event.addListener(marker, 'click', function() {     
       if(currentINW != null)
@@ -280,31 +257,11 @@ marker.addListener('mouseover', function() {
       this.setIcon(pinImage2);
     }
   });
-  /*
-  
-  
-*/
+
+ 
+
+
 }
 
 
 
-function convertToObservable(list) 
-{ 
-    
-    var newList = []; 
-    $.each(list, function (i, obj) {
-        var newObj = {}; 
-
-        newObj.place = obj.place.name;
-        newObj.Marker = obj.marker;
-        
-        Object.keys(obj).forEach(function (key) { 
-            
-            newObj[key] = obj[key];
-        }); 
-        newObj.show = true
-        newList.push(newObj); 
-    }); 
-   
-    return newList; 
-}

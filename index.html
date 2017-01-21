@@ -21,9 +21,9 @@
         <h3> Neighborhood Tool Map V1.0 <br> Searching in 48128...</h3>
         <select data-bind="options: types, value:selectedType, event:{ change: filter}"></select>   
 
-        <div data-bind="with: Object"></div>
+        
         <ul data-bind= "foreach: locList" id="list">
-            <li data-bind="visible: show==true, text: name, event : {mouseover: $parent.onMouseover, mouseout: $parent.onMouseout, click: $parent.showInfo}"></li>
+            <li data-bind="visble:show, text: name, event : {mouseover: $parent.onMouseover, mouseout: $parent.onMouseout, click: $parent.showInfo}"></li>
         </ul>
 </div>
     </div>
