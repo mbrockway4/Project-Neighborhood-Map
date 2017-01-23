@@ -15,7 +15,6 @@
        background-color: yellow;
        cursor: pointer;
    }
-   
    .container {
        height: 100%;
        position: relative;
@@ -42,8 +41,8 @@
    #map {
        bottom: 0px;
        height: 100%;
-       width: 100%;s
-       position: absolute;
+       width: 100%;
+       s position: absolute;
        right: 0px;
        z-index: 0;
    }
@@ -60,8 +59,6 @@
        position: absolute;
        z-index: 4;
    }
-
-
    #pano {
        width: 200px;
        height: 200px;
@@ -86,12 +83,12 @@
    }
    div#openweathermap-widget {
        position: absolute;
-        right: 0;
+       right: 0;
        z-index: 1000;
    }
    #hidenav {
-      padding-bottom: 0;
-      z-index: 5;
-      position: fixed;
-      left: 115px;
+       padding-bottom: 0;
+       z-index: 5;
+       position: fixed;
+       left: 115px;
    }
