@@ -5,39 +5,47 @@
        margin: 0;
        padding: 0;
    }
+
    ul {
        list-style-type: none;
        padding-left: 0px;
    }
+
    li {} li:hover {
        font-weight: bold;
        text-decoration: underline;
        background-color: yellow;
        cursor: pointer;
    }
+
    .container {
        height: 100%;
        position: relative;
    }
+
    input {
        font-size: 12px;
    }
+
    h1 {
        color: #525454;
        font-size: 22px;
        margin: 0 0 10px 0;
        text-align: center;
    }
+
    #hide-listings,
    #show-listings {
        width: 48%;
    }
+
    hr {
        background: #D0D7D9;
        height: 1px;
        margin: 20px 0 20px 0;
        border: none;
    }
+
    #map {
        bottom: 0px;
        height: 100%;
@@ -46,6 +54,7 @@
        right: 0px;
        z-index: 0;
    }
+
    .options-box {
        background: #fff;
        border: 1px solid #999;
@@ -59,33 +68,41 @@
        position: absolute;
        z-index: 4;
    }
+
    #pano {
        width: 200px;
        height: 200px;
    }
+
    #places-search,
    #search-within-time-text {
        width: 84%;
    }
+
    .text {
        font-size: 12px;
    }
+
    #toggle-drawing {
        width: 27%;
        position: relative;
        margin-left: 10px;
    }
+
    #zoom-to-area-text {
        width: 70%;
    }
+
    #zoom-to-area {
        width: 24%;
    }
+
    div#openweathermap-widget {
        position: absolute;
        right: 0;
        z-index: 1000;
    }
+   
    #hidenav {
        padding-bottom: 0;
        z-index: 5;
